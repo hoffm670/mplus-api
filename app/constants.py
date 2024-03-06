@@ -23,3 +23,14 @@ SEASON_CUTOFF = 'https://raider.io/api/v1/mythic-plus/season-cutoffs'
 GET_CHARACTER = 'https://raider.io/api/v1/characters/profile'
 
 GET_CHARACTER_FIELDS = 'mythic_plus_best_runs,mythic_plus_alternate_runs'
+
+# Scraper
+RAIDER_RANKINGS_URL = 'https://raider.io/mythic-plus-character-rankings'
+PAGE_SIZE = 40
+
+ROW_CLASS = 'mythic-plus-rankings--row'
+
+CHARACTER_SELECTOR = 'td:nth-child(2) > div > div > span'
+SERVER_SELECTOR = 'td:nth-child(2) > div > div > div'
+
+SERVER_REGEX = r"^\((\w{2})\)\s(.+)$"

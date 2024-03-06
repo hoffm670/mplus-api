@@ -2,10 +2,12 @@ import asyncio
 
 import uvicorn
 from api import api as api_app
-from constants import DF_S3, REGION_US
-# from app.repository.raider_api import RaiderApi
-# from service.raider import RaiderService
+from constants import DF_S3, REGION_US, FORT, TYRAN
 from service.scraper import app as app_rocketry
+import logging
+
+from repository.firestore import FirestoreRepository
+from service.snapshot import SnapshotService
 
 
 class Server(uvicorn.Server):
@@ -29,14 +31,24 @@ async def main():
     await asyncio.wait([sched, api])
 
 if __name__ == "__main__":
+    logging.basicConfig(encoding='utf-8', level=logging.INFO)
     # Print Rocketry's logs to terminal
-    # logger = logging.getLogger("rocketry.task")
-    # logger.addHandler(logging.StreamHandler())
-
-    # print(RaiderService.get_cutoff_player_count(DF_S3, REGION_US))
-    # print(RaiderService.get_player_highest_keys('kiradh', 'sylvanas', 'eu'))
     # Run both applications
-    asyncio.run(main())
+    
+    # ss = FirestoreRepository()
+    # blah = ss.get_latest_snapshot_document()
+    # print(blah)
+    
+    # ss.create_snapshot_instance()
+
+
+    ss_service = SnapshotService()
+    ss_service.generate_new_snapshot()
+    
+    
+    # scraper = RaiderScraper()
+    # blah = scraper.get_title_players(65, DF_S3, REGION_US)
+    # asyncio.run(main())
 
 
 # if __name__ == "__main__":
