@@ -1,6 +1,7 @@
 fastapi
-uvicorn
-rocketry
+firebase-admin
 pydantic==1.10.10
-requests
 pyyaml
+requests
+rocketry
+uvicorn

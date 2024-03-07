@@ -19,7 +19,6 @@ class FirestoreRepository():
         
     def add_snapshot_document(self, data):
         id = str(uuid.uuid1())
-        print(json.dumps(data, indent=4))
         self.db.collection(SNAPSHOTS).document(id).set(data)
         
     def get_latest_snapshot_document(self):

@@ -1,7 +1,7 @@
 import asyncio
 
 import uvicorn
-from api import api as api_app
+from router import api_app
 from constants import DF_S3, REGION_US, FORT, TYRAN
 from service.scraper import app as app_rocketry
 import logging
@@ -24,7 +24,7 @@ class Server(uvicorn.Server):
 async def main():
     "Run Rocketry and FastAPI"
 
-    server = Server(config=uvicorn.Config(api_app, host='0.0.0.0', port=80, workers=1, loop="asyncio", log_config="log_conf.yaml"))
+    server = Server(config=uvicorn.Config(api_app, host='0.0.0.0', port=8080, workers=1, loop="asyncio", log_config="log_conf.yaml"))
 
     api = asyncio.create_task(server.serve())
     sched = asyncio.create_task(app_rocketry.serve())
@@ -35,22 +35,7 @@ if __name__ == "__main__":
     logging.basicConfig(encoding='utf-8', level=logging.INFO)
     # Print Rocketry's logs to terminal
     # Run both applications
-    
-    # ss = FirestoreRepository()
-    # blah = ss.get_latest_snapshot_document()
-    # print(blah)
-    
-    # ss.create_snapshot_instance()
-
-
-    # print(RaiderService.get_rankings_page(1, DF_S3, REGION_US))
-    ss_service = SnapshotService()
-    ss_service.generate_new_snapshot()
-    
-    
-    # scraper = RaiderScraper()
-    # blah = scraper.get_title_players(65, DF_S3, REGION_US)
-    # asyncio.run(main())
+    asyncio.run(main())
 
 
 # if __name__ == "__main__":
