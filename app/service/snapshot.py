@@ -1,7 +1,7 @@
 from service.raider import RaiderService
 from repository.firestore import FirestoreRepository
 from repository.raider_scraper import RaiderScraper
-from constants import DF_S3, REGION_US, DF_S3_DUNGEONS, FORT, TYRAN
+from constants import DF_S3, REGION_US, DF_S3_DUNGEONS, FORT, TYRAN, PAGE_SIZE, AFFIX_MAP
 import time
 from datetime import datetime
 import logging
@@ -17,40 +17,50 @@ class SnapshotService:
     def generate_new_snapshot(self):
         logger.info('Starting snapshot')
         num_eligible = RaiderService.get_cutoff_player_count(DF_S3, REGION_US)
-        # num_eligible = 45
         logger.info(f'Number of title players retreived: {num_eligible}')
 
         # Run scraper to get list of players
-        logger.info(f'Starting to scrape raider.io leaderboard')
-        players = self.scraper.get_title_players(
-            num_eligible, DF_S3, REGION_US)
+        # logger.info(f'Starting to scrape raider.io leaderboard')
+        # players = self.scraper.get_title_players(
+        #     num_eligible, DF_S3, REGION_US)
 
+        characters = []
+        num_toons = 0
+        index = 0
+        while num_toons < num_eligible:
+            character_data = RaiderService.get_rankings_page(index, DF_S3, REGION_US)
+            if num_eligible - num_toons > PAGE_SIZE:
+                characters = characters + character_data
+            else:
+                characters = characters + character_data[0: num_eligible - num_toons]
+            num_toons += PAGE_SIZE
+            time.sleep(0.05)
+            
+        
+        dungeon_map = RaiderService.get_dungeons()
+        modified_characters = []
+        for character in characters:
+            mod_char = {}
+            mod_char['character'] = f"{character['name']} - {character['realm']} - {character['region']}"
+            mod_char[TYRAN] = {}
+            mod_char[FORT] = {}
+            for run in character['runs'] + character['alternate_runs']:
+                affix = AFFIX_MAP[run['affixes'][0]]
+                dungeon = dungeon_map[run['zoneId']]
+                mod_char[affix][dungeon.short_name] = run['mythicLevel']
+            modified_characters.append(mod_char)
+            
         scan_doc = {
             'date': datetime.now().strftime('%m-%d-%Y'),
             'time': datetime.now().strftime('%H:%M:%S'),
             'region': REGION_US,
             'season': DF_S3,
-            'characters': []
+            'characters': modified_characters
         }
-
-        # Make calls for each player
-        for player in players:
-            try:
-                res = RaiderService.get_player_highest_keys(
-                    player['name'], player['server'], player['region'])
-                scan_doc['characters'].append(res)
-                time.sleep(0.05)
-            except Exception as error:
-                logger.error(f'Error {error}')
-                logger.error(player)
-                logging.info('Sleeping 5 seconds after failed API call...')
-                time.sleep(5)
-
-
-
+        
         self.ss_repo.add_scan_document(scan_doc)
-        snapshot_doc = self._calculate_stats(scan_doc)
-        self.ss_repo.add_snapshot_document(snapshot_doc)
+        # snapshot_doc = self._calculate_stats(scan_doc)
+        # self.ss_repo.add_snapshot_document(snapshot_doc)
 
     @staticmethod
     def _calculate_stats(ss_doc):

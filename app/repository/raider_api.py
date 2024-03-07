@@ -1,7 +1,7 @@
 import logging
 
 import requests
-from constants import GET_CHARACTER, GET_CHARACTER_FIELDS, SEASON_CUTOFF
+from constants import GET_CHARACTER, GET_CHARACTER_FIELDS, SEASON_CUTOFF, GET_STATIC_DATA, GET_RANKINGS_PAGE
 
 logger = logging.getLogger('raider.api')
 
@@ -32,3 +32,24 @@ class RaiderApi:
             logger.error(
                 f'Failed to retrieve character info for {name} - {realm} - {region}.')
             logger.error(f'Error: {response.status_code} - {response.reason}')
+            
+    @staticmethod
+    def get_rankings_page(page, season, region):
+        params = {"region": region, "season": season, "class": "all", "role": "all", "page": page}
+        response = requests.get(GET_RANKINGS_PAGE, params=params)
+        if response.status_code == 200:
+            logger.debug(f'Retreived rankings page {page} - {season} - {region}')
+            return response.json()
+        else:
+            logger.error(
+                f'Failed to retreive rankings page {page} - {season} - {region}')
+            
+    @staticmethod        
+    def get_expansion_dungeon_data():
+        response = requests.get(GET_STATIC_DATA)
+        if response.status_code == 200:
+            logger.debug('Retreived expansion dungeon static data')
+            return response.json()
+        else:
+            logger.error(
+                f'Failed to retreive expansion dungeon static data. {response.status_code} - {response.reason}')

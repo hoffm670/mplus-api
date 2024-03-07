@@ -8,6 +8,7 @@ import logging
 
 from repository.firestore import FirestoreRepository
 from service.snapshot import SnapshotService
+from service.raider import RaiderService
 
 
 class Server(uvicorn.Server):
@@ -42,6 +43,7 @@ if __name__ == "__main__":
     # ss.create_snapshot_instance()
 
 
+    # print(RaiderService.get_rankings_page(1, DF_S3, REGION_US))
     ss_service = SnapshotService()
     ss_service.generate_new_snapshot()
     
