@@ -1,6 +1,7 @@
 fastapi
 firebase-admin
 pydantic==1.10.10
+pyinstaller
 pyyaml
 requests
 rocketry

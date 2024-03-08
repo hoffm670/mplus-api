@@ -1,12 +1,22 @@
-FROM python:3.10.12
+### Builder ###
+FROM python:3.10.12-alpine as builder
+
+RUN apk add binutils
 
 COPY requirements-frozen.txt requirements-frozen.txt
 RUN pip3 install -r requirements-frozen.txt
 
-ARG WORKDIR="/mplus-api"
+COPY app /app
 
+RUN pyinstaller --onefile /app/main.py
+
+
+### Executor ###
+FROM alpine:3.16
+
+ARG WORKDIR="/mplus-api"
 WORKDIR $WORKDIR
-COPY app ${WORKDIR}/app
+COPY --from=builder /dist/main ${WORKDIR}
 COPY log_conf.yaml firebase-admin-key.json ${WORKDIR}
 
-ENTRYPOINT [ "/usr/local/bin/python3", "app/main.py" ]
+ENTRYPOINT ["./main"]
