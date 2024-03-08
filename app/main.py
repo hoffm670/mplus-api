@@ -13,9 +13,10 @@ from service.raider import RaiderService
 
 class Server(uvicorn.Server):
     """Customized uvicorn.Server
-    
+
     Uvicorn server overrides signals and we need to include
     Rocketry to the signals."""
+
     def handle_exit(self, sig: int, frame) -> None:
         app_rocketry.session.shut_down()
         return super().handle_exit(sig, frame)
