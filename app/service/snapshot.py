@@ -7,6 +7,7 @@ import logging
 
 logger = logging.getLogger('snapshot.service')
 
+
 class SnapshotService:
 
     def __init__(self):
@@ -28,9 +29,9 @@ class SnapshotService:
             else:
                 characters = characters + character_data[0: num_eligible - num_toons]
             num_toons += PAGE_SIZE
-            index+=1
+            index += 1
             time.sleep(0.05)
-            
+
         logger.info('Getting dungeon info')
         dungeon_map = RaiderService.get_dungeons()
         modified_characters = []
@@ -45,7 +46,7 @@ class SnapshotService:
                 dungeon = dungeon_map[run['zoneId']]
                 mod_char[affix][dungeon.short_name] = run['mythicLevel']
             modified_characters.append(mod_char)
-            
+
         scan_doc = {
             'date': datetime.now().strftime('%m-%d-%Y'),
             'time': datetime.now().strftime('%H:%M:%S'),
@@ -53,7 +54,7 @@ class SnapshotService:
             'season': DF_S3,
             'characters': modified_characters
         }
-        
+
         logger.info('Saving scan data to database')
         self.ss_repo.add_scan_document(scan_doc)
         logger.info('Calculating stats from dataset')
@@ -63,7 +64,7 @@ class SnapshotService:
 
     def get_latest_snapshot(self):
         return self.ss_repo.get_latest_snapshot_document()
-    
+
     @staticmethod
     def _calculate_stats(ss_doc):
 
@@ -78,8 +79,7 @@ class SnapshotService:
                 for key in character[affix].keys():
                     val = str(character[affix][key])
                     dungeon_dict[key][affix][val] = dungeon_dict[key][affix].get(val, 0) + 1
-        
-        
+
         return {
             'date': datetime.now().strftime('%m-%d-%Y'),
             'time': datetime.now().strftime('%H:%M:%S'),

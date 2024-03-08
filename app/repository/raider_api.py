@@ -32,7 +32,7 @@ class RaiderApi:
             logger.error(
                 f'Failed to retrieve character info for {name} - {realm} - {region}.')
             logger.error(f'Error: {response.status_code} - {response.reason}')
-            
+
     @staticmethod
     def get_rankings_page(page, season, region):
         params = {"region": region, "season": season, "class": "all", "role": "all", "page": page}
@@ -43,8 +43,8 @@ class RaiderApi:
         else:
             logger.error(
                 f'Failed to retreive rankings page {page} - {season} - {region}')
-            
-    @staticmethod        
+
+    @staticmethod
     def get_expansion_dungeon_data():
         response = requests.get(GET_STATIC_DATA)
         if response.status_code == 200:

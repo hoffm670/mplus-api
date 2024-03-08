@@ -4,13 +4,13 @@ from constants import FORT, TYRAN, CURRENT_SEASON
 
 
 class RaiderService:
-    
+
     @staticmethod
     def get_cutoff_player_count(season, region):
         api_response = RaiderApi.get_season_cutoff(season, region)
         player_count = api_response["cutoffs"]["p999"]["all"]["quantilePopulationCount"]
         return player_count
-    
+
     @staticmethod
     def get_player_highest_keys(name, realm, region):
         api_response = RaiderApi.get_character_profile(name, realm, region)
@@ -22,8 +22,8 @@ class RaiderService:
             affix = run['affixes'][0]['name']
             short_name = run['short_name']
             best_keys[affix][short_name] = run['mythic_level']
-        return(best_keys)
-    
+        return (best_keys)
+
     @staticmethod
     def get_rankings_page(page, season, region):
         api_response = RaiderApi.get_rankings_page(page, season, region)
@@ -38,7 +38,7 @@ class RaiderService:
                 "alternate_runs": character['alternateRuns']
             })
         return trimmed_data
-    
+
     @staticmethod
     def get_dungeons():
         api_response = RaiderApi.get_expansion_dungeon_data()
@@ -46,7 +46,7 @@ class RaiderService:
         dungeons_json = next(season for season in seasons if season['slug'])['dungeons']
         dungeon_map = RaiderService._create_dungeon_map(dungeons_json)
         return dungeon_map
-    
+
     @staticmethod
     def _create_dungeon_map(dungeons_json):
         dungeon_map = {}
