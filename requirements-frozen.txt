@@ -1,3 +1,4 @@
+altgraph==0.17.4
 anyio==4.3.0
 CacheControl==0.14.0
 cachetools==5.3.3
@@ -25,12 +26,15 @@ h11==0.14.0
 httplib2==0.22.0
 idna==3.6
 msgpack==1.0.8
+packaging==23.2
 proto-plus==1.23.0
 protobuf==4.25.3
 pyasn1==0.5.1
 pyasn1-modules==0.3.0
 pycparser==2.21
 pydantic==1.10.10
+pyinstaller==6.4.0
+pyinstaller-hooks-contrib==2024.2
 PyJWT==2.8.0
 pyparsing==3.1.2
 python-dateutil==2.9.0.post0
