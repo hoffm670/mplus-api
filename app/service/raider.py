@@ -40,7 +40,7 @@ class RaiderService:
         return trimmed_data
 
     @staticmethod
-    def get_dungeons():
+    def get_dungeons() -> dict[str, Dungeon]:
         api_response = RaiderApi.get_expansion_dungeon_data()
         seasons = api_response['seasons']
         dungeons_json = next(season for season in seasons if season['slug'])['dungeons']
@@ -48,9 +48,9 @@ class RaiderService:
         return dungeon_map
 
     @staticmethod
-    def _create_dungeon_map(dungeons_json):
+    def _create_dungeon_map(dungeons_json) -> dict[str, Dungeon]:
         dungeon_map = {}
         for entry in dungeons_json:
             dungeon = Dungeon(entry['id'], entry['slug'], entry['name'], entry['short_name'])
-            dungeon_map[dungeon.id] = dungeon
+            dungeon_map[str(dungeon.id)] = dungeon
         return dungeon_map
