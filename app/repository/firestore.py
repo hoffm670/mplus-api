@@ -23,4 +23,4 @@ class FirestoreRepository():
         self.db.collection(SNAPSHOTS).document(id).set(data)
 
     def get_latest_snapshot_document(self):
-        return self.db.collection(SNAPSHOTS).limit_to_last(1).get()[0].to_dict()
+        return self.db.collection(SNAPSHOTS).order_by("timestamp").limit_to_last(1).get()[0].to_dict()
