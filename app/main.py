@@ -37,9 +37,3 @@ if __name__ == "__main__":
     # Print Rocketry's logs to terminal
     # Run both applications
     asyncio.run(main())
-
-
-# if __name__ == "__main__":
-#     config = uvicorn.Config("main:app", port=8080, log_level="info", log_config="log_conf.yaml")
-#     server = uvicorn.Server(config)
-#     server.run()
