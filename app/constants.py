@@ -1,6 +1,3 @@
-# Regions
-REGION_US = 'us'
-
 # Affixes
 FORT = 'Fortified'
 FORT_ID = 10
