@@ -1,6 +1,3 @@
-from repository.raider_api import RaiderApi
-
-
 class Dungeon:
 
     def __init__(self, id, slug, name, short_name):

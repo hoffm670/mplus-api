@@ -1,15 +1,30 @@
 from repository.raider_api import RaiderApi
 from models.dungeon import Dungeon
-from constants import FORT, TYRAN, CURRENT_SEASON
+from models.cutoff_stats import CutoffStats
+from constants import FORT, TYRAN
+from datetime import datetime, time
 
 
 class RaiderService:
 
     @staticmethod
-    def get_cutoff_player_count(season, region):
+    def get_cutoff_player_count(season, region) -> CutoffStats:
         api_response = RaiderApi.get_season_cutoff(season, region)
         player_count = api_response["cutoffs"]["p999"]["all"]["quantilePopulationCount"]
-        return player_count
+        cutoff_rating = api_response["cutoffs"]["p999"]["all"]["quantileMinValue"]
+        graphData = api_response["cutoffs"]["graphData"]["p999"]["data"]
+        latest_ts = datetime.combine(datetime.fromtimestamp(graphData[0]['x'] / 1000), time.min)
+        change = change_days = 0
+        for entry in graphData:
+            ts = datetime.combine(datetime.fromtimestamp(entry['x'] / 1000), time.min)
+
+            days_diff = abs(latest_ts - ts).days
+            if days_diff >= 7:
+                change = round(cutoff_rating - entry['y'], 1)
+                change_days = days_diff
+                break
+
+        return CutoffStats(cutoff_rating, player_count, change, change_days)
 
     @staticmethod
     def get_player_highest_keys(name, realm, region):
