@@ -9,9 +9,9 @@ class StatsRouter(APIRouter):
         self.ss_service = SnapshotService()
 
         @self.get("")
-        async def get_mplus_stats():
-            return self.ss_service.get_latest_snapshot()
+        async def get_mplus_stats(region: str):
+            return self.ss_service.get_latest_snapshot(region)
 
         @self.post("/refresh")
         async def refresh_mplus_stats():
-            return self.ss_service.generate_new_snapshot()
+            return self.ss_service.generate_snapshot_all_regions()

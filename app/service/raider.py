@@ -1,6 +1,7 @@
 from repository.raider_api import RaiderApi
 from models.dungeon import Dungeon
 from models.cutoff_stats import CutoffStats
+from models.regions import Region
 from constants import FORT, TYRAN
 from datetime import datetime, time
 
@@ -8,8 +9,8 @@ from datetime import datetime, time
 class RaiderService:
 
     @staticmethod
-    def get_cutoff_player_count(season, region) -> CutoffStats:
-        api_response = RaiderApi.get_season_cutoff(season, region)
+    def get_cutoff_player_count(season, region: Region) -> CutoffStats:
+        api_response = RaiderApi.get_season_cutoff(season, region.value)
         player_count = api_response["cutoffs"]["p999"]["all"]["quantilePopulationCount"]
         cutoff_rating = api_response["cutoffs"]["p999"]["all"]["quantileMinValue"]
         graphData = api_response["cutoffs"]["graphData"]["p999"]["data"]
@@ -40,8 +41,8 @@ class RaiderService:
         return (best_keys)
 
     @staticmethod
-    def get_rankings_page(page, season, region):
-        api_response = RaiderApi.get_rankings_page(page, season, region)
+    def get_rankings_page(page, season, region: Region):
+        api_response = RaiderApi.get_rankings_page(page, season, region.value)
         characters = api_response['rankings']['rankedCharacters']
         trimmed_data = []
         for character in characters:

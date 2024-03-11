@@ -1,7 +1,6 @@
 import firebase_admin
 from firebase_admin import firestore, credentials
 import uuid
-import json
 
 SCANS = 'scans'
 SNAPSHOTS = 'snapshot'
@@ -22,5 +21,5 @@ class FirestoreRepository():
         id = str(uuid.uuid1())
         self.db.collection(SNAPSHOTS).document(id).set(data)
 
-    def get_latest_snapshot_document(self):
-        return self.db.collection(SNAPSHOTS).order_by("timestamp").limit_to_last(1).get()[0].to_dict()
+    def get_latest_snapshot_document(self, region: str):
+        return self.db.collection(SNAPSHOTS).where(filter=firestore.FieldFilter("region", "==", region)).order_by("timestamp").limit_to_last(1).get()[0].to_dict()
