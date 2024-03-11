@@ -16,16 +16,6 @@ AFFIX_MAP = {
 DF_S3 = 'season-df-3'
 CURRENT_SEASON = DF_S3  # TODO have a config file
 
-BRH = 'BRH'
-AD = 'AD'
-FALL = 'FALL'
-DHT = 'DHT'
-WM = 'WM'
-EB = 'EB'
-RISE = 'RISE'
-TOTT = 'TOTT'
-DF_S3_DUNGEONS = [BRH, AD, FALL, DHT, WM, EB, RISE, TOTT]
-
 
 # API
 SEASON_CUTOFF = 'https://raider.io/api/v1/mythic-plus/season-cutoffs'
