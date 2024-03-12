@@ -29,6 +29,4 @@ async def main():
 
 if __name__ == "__main__":
     logging.basicConfig(encoding='utf-8', level=logging.INFO)
-    # Print Rocketry's logs to terminal
-    # Run both applications
     asyncio.run(main())

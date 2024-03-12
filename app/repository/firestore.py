@@ -1,15 +1,15 @@
 import uuid
 
-import firebase_admin
 from constants import REGION, SNAPSHOTS, TIMESTAMP
-from firebase_admin import credentials, firestore
+from firebase_admin import credentials, firestore, initialize_app
+
+cred = credentials.Certificate("firebase-admin-key.json")
+initialize_app(cred)
 
 
 class FirestoreRepository():
 
     def __init__(self):
-        cred = credentials.Certificate("firebase-admin-key.json")
-        firebase_admin.initialize_app(cred)
         self.db = firestore.client()
 
     def add_snapshot_document(self, data):
