@@ -32,3 +32,8 @@ CHARACTER_SELECTOR = 'td:nth-child(2) > div > div > span'
 SERVER_SELECTOR = 'td:nth-child(2) > div > div > div'
 
 SERVER_REGEX = r"^\((\w{2})\)\s(.+)$"
+
+# Database
+SNAPSHOTS = 'snapshot'
+TIMESTAMP = 'timestamp'
+REGION = 'region'

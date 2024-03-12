@@ -1,7 +1,8 @@
 import logging
 
 import requests
-from constants import GET_CHARACTER, GET_CHARACTER_FIELDS, SEASON_CUTOFF, GET_STATIC_DATA, GET_RANKINGS_PAGE
+from constants import (GET_CHARACTER, GET_CHARACTER_FIELDS, GET_RANKINGS_PAGE,
+                       GET_STATIC_DATA, SEASON_CUTOFF)
 
 logger = logging.getLogger('raider.api')
 
