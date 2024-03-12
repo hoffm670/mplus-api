@@ -1,9 +1,9 @@
 import asyncio
+import logging
 
 import uvicorn
 from router import api_app
-from service.scraper import app as app_rocketry
-import logging
+from service.scheduler import app as app_rocketry
 
 
 class Server(uvicorn.Server):

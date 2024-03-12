@@ -1,11 +1,12 @@
-from service.raider import RaiderService
-from repository.firestore import FirestoreRepository
-from constants import DF_S3, FORT, TYRAN, PAGE_SIZE, AFFIX_MAP
-from models.regions import Region
-from models.cutoff_stats import CutoffStats
+import logging
 import time
 from datetime import datetime
-import logging
+
+from constants import AFFIX_MAP, CURRENT_SEASON, FORT, PAGE_SIZE, TYRAN
+from models.cutoff_stats import CutoffStats
+from models.regions import Region
+from repository.firestore import FirestoreRepository
+from service.raider import RaiderService
 
 logger = logging.getLogger('snapshot.service')
 
@@ -21,15 +22,15 @@ class SnapshotService:
 
     def generate_new_snapshot(self, region: Region):
         logger.info('Starting snapshot')
-        cutoff_stats = RaiderService.get_cutoff_player_count(DF_S3, region)
+        cutoff_stats = RaiderService.get_cutoff_player_count(CURRENT_SEASON, region)
         logger.info(f'Cutoff stats title players retreived: {vars(cutoff_stats)}')
 
         characters = []
         num_toons = 0
         index = 0
         while num_toons < cutoff_stats.num_eligible:
-            logger.info(f'Getting rankings page {index} for {DF_S3} {region.value}')
-            character_data = RaiderService.get_rankings_page(index, DF_S3, region)
+            logger.info(f'Getting rankings page {index} for {CURRENT_SEASON} {region.value}')
+            character_data = RaiderService.get_rankings_page(index, CURRENT_SEASON, region)
             if cutoff_stats.num_eligible - num_toons > PAGE_SIZE:
                 characters = characters + character_data
             else:
@@ -80,7 +81,7 @@ class SnapshotService:
             'time': datetime.now().strftime('%H:%M:%S'),
             'timestamp': datetime.now().timestamp(),
             'region': region.value,
-            'season': DF_S3,
+            'season': CURRENT_SEASON,
             'character_count': cutoff_stats.num_eligible,
             'rating_cutoff': cutoff_stats.cutoff_score,
             'change': cutoff_stats.change,
