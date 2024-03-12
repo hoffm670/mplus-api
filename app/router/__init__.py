@@ -1,7 +1,7 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from .health import router as health_router
-from .stats import StatsRouter
+from router.health import router as health_router
+from router.stats import StatsRouter
 
 api_app = FastAPI()
 origins = [
