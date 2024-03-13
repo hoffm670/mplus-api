@@ -2,6 +2,7 @@ import asyncio
 import logging
 
 import uvicorn
+from service.logging import HealthFilter
 from router import api_app
 from service.scheduler import app as app_rocketry
 
@@ -29,4 +30,5 @@ async def main():
 
 if __name__ == "__main__":
     logging.basicConfig(encoding='utf-8', level=logging.INFO)
+    logging.getLogger("uvicorn.access").addFilter(HealthFilter())
     asyncio.run(main())
