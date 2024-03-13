@@ -18,6 +18,7 @@ ARG WORKDIR="/mplus-api"
 WORKDIR $WORKDIR
 COPY --from=builder /dist/main ${WORKDIR}
 COPY log_conf.yaml firebase-admin-key.json ${WORKDIR}
-COPY deploy-config.json ${WORKDIR}/config.json
+
+ENV ENVIRONMENT 'PROD'
 
 ENTRYPOINT ["./main"]

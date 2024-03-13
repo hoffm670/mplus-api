@@ -2,7 +2,7 @@ import logging
 import time
 from datetime import datetime
 
-from constants import AFFIX_MAP, CURRENT_SEASON, FORT, PAGE_SIZE, TYRAN
+from constants import AFFIX_MAP, FORT, PAGE_SIZE, TYRAN
 from models.cutoff_stats import CutoffStats
 from models.regions import Region
 from repository.firestore import FirestoreRepository
@@ -16,21 +16,21 @@ class SnapshotService:
     def __init__(self):
         self.ss_repo = FirestoreRepository()
 
-    def generate_snapshot_all_regions(self):
+    def generate_snapshot_all_regions(self, season: str):
         for region in Region:
-            self.generate_new_snapshot(region)
+            self.generate_new_snapshot(region, season)
 
-    def generate_new_snapshot(self, region: Region):
+    def generate_new_snapshot(self, region: Region, season: str):
         logger.info('Starting snapshot')
-        cutoff_stats = RaiderService.get_cutoff_player_count(CURRENT_SEASON, region)
+        cutoff_stats = RaiderService.get_cutoff_player_count(season, region)
         logger.info(f'Cutoff stats title players retreived: {vars(cutoff_stats)}')
 
         characters = []
         num_toons = 0
         index = 0
         while num_toons < cutoff_stats.num_eligible:
-            logger.info(f'Getting rankings page {index} for {CURRENT_SEASON} {region.value}')
-            character_data = RaiderService.get_rankings_page(index, CURRENT_SEASON, region)
+            logger.info(f'Getting rankings page {index} for {season} {region.value}')
+            character_data = RaiderService.get_rankings_page(index, season, region)
             if cutoff_stats.num_eligible - num_toons > PAGE_SIZE:
                 characters = characters + character_data
             else:
@@ -52,7 +52,7 @@ class SnapshotService:
             modified_characters.append(mod_char)
 
         logger.info('Calculating stats from dataset')
-        snapshot_doc = self._calculate_stats(modified_characters, cutoff_stats, region)
+        snapshot_doc = self._calculate_stats(modified_characters, cutoff_stats, region, season)
 
         logger.info('Saving stats snapshot to database')
         self.ss_repo.add_snapshot_document(snapshot_doc)
@@ -61,7 +61,7 @@ class SnapshotService:
         return self.ss_repo.get_latest_snapshot_document(region)
 
     @staticmethod
-    def _calculate_stats(characters, cutoff_stats: CutoffStats, region: Region):
+    def _calculate_stats(characters, cutoff_stats: CutoffStats, region: Region, season: str):
         logger.info('Getting dungeon info')
         dungeon_map = RaiderService.get_dungeons()
         dungeon_dict = {}
@@ -81,7 +81,7 @@ class SnapshotService:
             'time': datetime.now().strftime('%H:%M:%S'),
             'timestamp': datetime.now().timestamp(),
             'region': region.value,
-            'season': CURRENT_SEASON,
+            'season': season,
             'character_count': cutoff_stats.num_eligible,
             'rating_cutoff': cutoff_stats.cutoff_score,
             'change': cutoff_stats.change,
