@@ -1,0 +1,10 @@
+FROM python:3.10.12-bookworm as builder
+
+COPY requirements-frozen.txt requirements-frozen.txt
+RUN pip3 install -r requirements-frozen.txt
+
+COPY app /app
+
+COPY log_conf.yaml firebase-admin-key.json /
+
+ENTRYPOINT [ "python3", "/app/main.py" ]
