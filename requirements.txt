@@ -6,3 +6,6 @@ pyyaml
 requests
 rocketry
 uvicorn
+pyopenssl
+pyasn1
+ndg-httpsclient
