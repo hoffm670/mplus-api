@@ -57,6 +57,8 @@ class SnapshotService:
         logger.info('Saving stats snapshot to database')
         self.ss_repo.add_snapshot_document(snapshot_doc)
 
+        logger.info('Snapshot refresh complete')
+
     def get_latest_snapshot(self, region: str):
         return self.ss_repo.get_latest_snapshot_document(region)
 
