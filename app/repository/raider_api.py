@@ -1,6 +1,8 @@
 import logging
-
 import requests
+from urllib.parse import urljoin, urlencode
+
+from config import get_config, CURRENT_EXPANSION_ID
 from constants import (GET_CHARACTER, GET_CHARACTER_FIELDS, GET_RANKINGS_PAGE,
                        GET_STATIC_DATA, SEASON_CUTOFF)
 
@@ -47,7 +49,8 @@ class RaiderApi:
 
     @staticmethod
     def get_expansion_dungeon_data():
-        response = requests.get(GET_STATIC_DATA)
+        params = {'expansion_id': get_config().get(CURRENT_EXPANSION_ID)}
+        response = requests.get(urljoin(GET_STATIC_DATA,  "?" + urlencode(params)))
         if response.status_code == 200:
             logger.debug('Retreived expansion dungeon static data')
             return response.json()

@@ -1,6 +1,5 @@
 from datetime import datetime, time
 
-from constants import FORT, TYRAN
 from models.cutoff_stats import CutoffStats
 from models.dungeon import Dungeon
 from models.regions import Region
@@ -33,12 +32,10 @@ class RaiderService:
         api_response = RaiderApi.get_character_profile(name, realm, region)
         best_keys = {}
         best_keys['character'] = f'{name} - {realm} - {region}'
-        best_keys[TYRAN] = {}
-        best_keys[FORT] = {}
-        for run in api_response['mythic_plus_best_runs'] + api_response['mythic_plus_alternate_runs']:
-            affix = run['affixes'][0]['name']
+        best_keys['runs'] = {}
+        for run in api_response['mythic_plus_best_runs']:
             short_name = run['short_name']
-            best_keys[affix][short_name] = run['mythic_level']
+            best_keys['runs'][short_name] = run['mythic_level']
         return (best_keys)
 
     @staticmethod
@@ -52,7 +49,6 @@ class RaiderService:
                 "realm": character['character']['realm']['name'],
                 "region": character['character']['region']['slug'],
                 "runs": character['runs'],
-                "alternate_runs": character['alternateRuns']
             })
         return trimmed_data
 

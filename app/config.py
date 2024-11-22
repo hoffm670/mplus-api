@@ -8,14 +8,14 @@ CURRENT_EXPANSION_ID = "current-expansion-id"
 
 DEV_CONFIG = {
     REFRESH_ENDPOINT_TOGGLE: True,
-    CURRENT_SEASON: "season-df-4",
-    CURRENT_EXPANSION_ID: "9",
+    CURRENT_SEASON: "season-tww-1",
+    CURRENT_EXPANSION_ID: "10",
 }
 
 PROD_CONFIG = {
     REFRESH_ENDPOINT_TOGGLE: False,
-    CURRENT_SEASON: "season-df-4",
-    CURRENT_EXPANSION_ID: "9",
+    CURRENT_SEASON: "season-tww-1",
+    CURRENT_EXPANSION_ID: "10",
 }
 
 

@@ -2,7 +2,7 @@ import logging
 import time
 from datetime import datetime
 
-from constants import AFFIX_MAP, FORT, PAGE_SIZE, TYRAN
+from constants import PAGE_SIZE
 from models.cutoff_stats import CutoffStats
 from models.regions import Region
 from repository.firestore import FirestoreRepository
@@ -21,7 +21,7 @@ class SnapshotService:
             self.generate_new_snapshot(region, season)
 
     def generate_new_snapshot(self, region: Region, season: str):
-        logger.info('Starting snapshot')
+        logger.info(f'Starting snapshot for {season} {region.value}')
         cutoff_stats = RaiderService.get_cutoff_player_count(season, region)
         logger.info(f'Cutoff stats title players retreived: {vars(cutoff_stats)}')
 
@@ -29,7 +29,7 @@ class SnapshotService:
         num_toons = 0
         index = 0
         while num_toons < cutoff_stats.num_eligible:
-            logger.info(f'Getting rankings page {index} for {season} {region.value}')
+            logger.info(f'Getting rankings page {index}')
             character_data = RaiderService.get_rankings_page(index, season, region)
             if cutoff_stats.num_eligible - num_toons > PAGE_SIZE:
                 characters = characters + character_data
@@ -44,11 +44,9 @@ class SnapshotService:
         for character in characters:
             mod_char = {}
             mod_char['character'] = f"{character['name']} - {character['realm']} - {character['region']}"
-            mod_char[TYRAN] = {}
-            mod_char[FORT] = {}
-            for run in character['runs'] + character['alternate_runs']:
-                affix = AFFIX_MAP[run['affixes'][0]]
-                mod_char[affix][str(run['zoneId'])] = run['mythicLevel']
+            mod_char['runs'] = {}
+            for run in character['runs']:
+                mod_char['runs'][str(run['zoneId'])] = run['mythicLevel']
             modified_characters.append(mod_char)
 
         logger.info('Calculating stats from dataset')
@@ -68,15 +66,14 @@ class SnapshotService:
         dungeon_map = RaiderService.get_dungeons()
         dungeon_dict = {}
         for character in characters:
-            for affix in FORT, TYRAN:
-                for dungeon_id in character[affix].keys():
-                    dungeon = dungeon_map[dungeon_id]
+            for dungeon_id in character['runs'].keys():
+                dungeon = dungeon_map[dungeon_id]
 
-                    if dungeon.short_name not in dungeon_dict:
-                        dungeon_dict[dungeon.short_name] = SnapshotService._get_empty_dungeon_entry(dungeon)
+                if dungeon.short_name not in dungeon_dict:
+                    dungeon_dict[dungeon.short_name] = SnapshotService._get_empty_dungeon_entry(dungeon)
 
-                    val = str(character[affix][dungeon_id])
-                    dungeon_dict[dungeon.short_name][affix][val] = dungeon_dict[dungeon.short_name][affix].get(val, 0) + 1
+                val = str(character['runs'][dungeon_id])
+                dungeon_dict[dungeon.short_name]['runs'][val] = dungeon_dict[dungeon.short_name]['runs'].get(val, 0) + 1
 
         return {
             'date': datetime.now().strftime('%m-%d-%Y'),
@@ -94,7 +91,6 @@ class SnapshotService:
     @staticmethod
     def _get_empty_dungeon_entry(dungeon):
         return {
-            TYRAN: {},
-            FORT: {},
+            'runs': {},
             "info": {key.replace('_', ''): value for key, value in dungeon.__dict__.items()}
         }
