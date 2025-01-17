@@ -7,4 +7,6 @@ COPY app /app
 
 COPY log_conf.yaml firebase-admin-key.json /
 
+ENV ENVIRONMENT 'PROD'
+
 ENTRYPOINT [ "python3", "/app/main.py" ]
