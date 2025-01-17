@@ -1,5 +1,6 @@
 from datetime import datetime, time
 
+from models.character import Character
 from models.cutoff_stats import CutoffStats
 from models.dungeon import Dungeon
 from models.regions import Region
@@ -39,17 +40,19 @@ class RaiderService:
         return (best_keys)
 
     @staticmethod
-    def get_rankings_page(page, season, region: Region):
+    def get_rankings_page(page, season, region: Region) -> list[Character]:
         api_response = RaiderApi.get_rankings_page(page, season, region.value)
         characters = api_response['rankings']['rankedCharacters']
-        trimmed_data = []
+        trimmed_data: list[Character] = []
         for character in characters:
-            trimmed_data.append({
-                "name": character['character']['name'],
-                "realm": character['character']['realm']['name'],
-                "region": character['character']['region']['slug'],
-                "runs": character['runs'],
-            })
+            trimmed_data.append(Character(
+                character['character']['name'],
+                character['character']['realm']['name'],
+                character['character']['region']['slug'],
+                character['character']['class']['slug'],
+                character['character']['spec'],
+                character['runs'],
+            ))
         return trimmed_data
 
     @staticmethod

@@ -1,4 +1,4 @@
-FROM python:3.10.12-bookworm as builder
+FROM python:3.10.12-bookworm AS builder
 
 COPY requirements-frozen.txt requirements-frozen.txt
 RUN pip3 install -r requirements-frozen.txt

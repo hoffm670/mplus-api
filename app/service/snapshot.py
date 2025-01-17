@@ -2,6 +2,8 @@ import logging
 import time
 from datetime import datetime
 
+from models.character import Character
+from models.dungeon import Dungeon
 from constants import PAGE_SIZE
 from models.cutoff_stats import CutoffStats
 from models.regions import Region
@@ -22,15 +24,15 @@ class SnapshotService:
 
     def generate_new_snapshot(self, region: Region, season: str):
         logger.info(f'Starting snapshot for {season} {region.value}')
-        cutoff_stats = RaiderService.get_cutoff_player_count(season, region)
+        cutoff_stats: CutoffStats = RaiderService.get_cutoff_player_count(season, region)
         logger.info(f'Cutoff stats title players retreived: {vars(cutoff_stats)}')
 
-        characters = []
-        num_toons = 0
-        index = 0
+        characters: list[Character] = []
+        num_toons: int = 0
+        index: int = 0
         while num_toons < cutoff_stats.num_eligible:
             logger.info(f'Getting rankings page {index}')
-            character_data = RaiderService.get_rankings_page(index, season, region)
+            character_data: list[Character] = RaiderService.get_rankings_page(index, season, region)
             if cutoff_stats.num_eligible - num_toons > PAGE_SIZE:
                 characters = characters + character_data
             else:
@@ -39,18 +41,8 @@ class SnapshotService:
             index += 1
             time.sleep(0.05)
 
-        modified_characters = []
-        logger.info('Trimming down character dataset to remove unused data')
-        for character in characters:
-            mod_char = {}
-            mod_char['character'] = f"{character['name']} - {character['realm']} - {character['region']}"
-            mod_char['runs'] = {}
-            for run in character['runs']:
-                mod_char['runs'][str(run['zoneId'])] = run['mythicLevel']
-            modified_characters.append(mod_char)
-
         logger.info('Calculating stats from dataset')
-        snapshot_doc = self._calculate_stats(modified_characters, cutoff_stats, region, season)
+        snapshot_doc = self._calculate_stats(characters, cutoff_stats, region, season)
 
         logger.info('Saving stats snapshot to database')
         self.ss_repo.add_snapshot_document(snapshot_doc)
@@ -61,19 +53,20 @@ class SnapshotService:
         return self.ss_repo.get_latest_snapshot_document(region)
 
     @staticmethod
-    def _calculate_stats(characters, cutoff_stats: CutoffStats, region: Region, season: str):
+    def _calculate_stats(characters: list[Character], cutoff_stats: CutoffStats, region: Region, season: str):
         logger.info('Getting dungeon info')
-        dungeon_map = RaiderService.get_dungeons()
+        dungeon_map: dict[str, Dungeon] = RaiderService.get_dungeons()
         dungeon_dict = {}
         for character in characters:
-            for dungeon_id in character['runs'].keys():
-                dungeon = dungeon_map[dungeon_id]
+            for run in character.runs:
+                dungeon_id: str = str(run['zoneId'])
+                dungeon: Dungeon = dungeon_map[dungeon_id]
 
                 if dungeon.short_name not in dungeon_dict:
                     dungeon_dict[dungeon.short_name] = SnapshotService._get_empty_dungeon_entry(dungeon)
 
-                val = str(character['runs'][dungeon_id])
-                dungeon_dict[dungeon.short_name]['runs'][val] = dungeon_dict[dungeon.short_name]['runs'].get(val, 0) + 1
+                key_level = str(run['mythicLevel'])
+                dungeon_dict[dungeon.short_name]['runs'][key_level] = dungeon_dict[dungeon.short_name]['runs'].get(key_level, 0) + 1
 
         return {
             'date': datetime.now().strftime('%m-%d-%Y'),
