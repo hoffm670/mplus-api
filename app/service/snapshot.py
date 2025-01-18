@@ -22,7 +22,7 @@ class SnapshotService:
         for region in Region:
             self.generate_new_snapshot(region, season)
 
-    def generate_new_snapshot(self, region: Region, season: str):
+    def generate_new_snapshot(self, region: Region, season: str, cap: int = None):
         logger.info(f'Starting snapshot for {season} {region.value}')
         cutoff_stats: CutoffStats = RaiderService.get_cutoff_player_count(season, region)
         logger.info(f'Cutoff stats title players retreived: {vars(cutoff_stats)}')
@@ -30,13 +30,16 @@ class SnapshotService:
         characters: list[Character] = []
         num_toons: int = 0
         index: int = 0
-        while num_toons < cutoff_stats.num_eligible:
+        num_eligible: int = cutoff_stats.num_eligible
+        if cap:
+            num_eligible = cap
+        while num_toons < num_eligible:
             logger.info(f'Getting rankings page {index}')
             character_data: list[Character] = RaiderService.get_rankings_page(index, season, region)
-            if cutoff_stats.num_eligible - num_toons > PAGE_SIZE:
+            if num_eligible - num_toons > PAGE_SIZE:
                 characters = characters + character_data
             else:
-                characters = characters + character_data[0: cutoff_stats.num_eligible - num_toons]
+                characters = characters + character_data[0: num_eligible - num_toons]
             num_toons += PAGE_SIZE
             index += 1
             time.sleep(0.05)
