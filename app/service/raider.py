@@ -49,7 +49,7 @@ class RaiderService:
                 character['character']['name'],
                 character['character']['realm']['name'],
                 character['character']['region']['slug'],
-                character['character']['class']['slug'],
+                character['character']['class']['name'],
                 character['character']['spec'],
                 character['runs'],
             ))
@@ -58,9 +58,12 @@ class RaiderService:
     @staticmethod
     def get_dungeons() -> dict[str, Dungeon]:
         api_response = RaiderApi.get_expansion_dungeon_data()
-        seasons = api_response['seasons']
-        dungeons_json = next(season for season in seasons if season['slug'])['dungeons']
-        dungeon_map = RaiderService._create_dungeon_map(dungeons_json)
+        seasons: dict = api_response['seasons']
+        dungeons_list = []
+        for season in seasons:
+            if season['dungeons']:
+                dungeons_list = dungeons_list + season['dungeons']
+        dungeon_map = RaiderService._create_dungeon_map(dungeons_list)
         return dungeon_map
 
     @staticmethod
