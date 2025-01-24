@@ -52,6 +52,7 @@ class RaiderService:
                 character['character']['class']['name'],
                 character['character']['spec'],
                 character['runs'],
+                character['score']
             ))
         return trimmed_data
 

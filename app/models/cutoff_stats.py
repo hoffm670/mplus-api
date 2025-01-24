@@ -14,6 +14,10 @@ class CutoffStats:
     def num_eligible(self):
         return self._num_eligible
 
+    @num_eligible.setter
+    def num_eligible(self, value):
+        self._num_eligible = value
+
     @property
     def change(self):
         return self._change
