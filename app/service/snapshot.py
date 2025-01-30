@@ -100,9 +100,12 @@ class SnapshotService:
 
                 if dungeon.short_name not in dungeon_dict:
                     dungeon_dict[dungeon.short_name] = SnapshotService._get_empty_dungeon_entry(dungeon)
+                    dungeon_dict[dungeon.short_name]['runList']
 
                 key_level = str(run['mythicLevel'])
                 dungeon_dict[dungeon.short_name]['runs'][key_level] = dungeon_dict[dungeon.short_name]['runs'].get(key_level, 0) + 1
+                dungeon_dict[dungeon.short_name]['runList'].append({'level': run['mythicLevel'], 'time_ms': run['clearTimeMs']})
+
         return list(dungeon_dict.values())
 
     @staticmethod
@@ -127,5 +130,6 @@ class SnapshotService:
     def _get_empty_dungeon_entry(dungeon):
         return {
             'runs': {},
+            'runList': [],
             'info': {key.replace('_', ''): value for key, value in dungeon.__dict__.items()}
         }
