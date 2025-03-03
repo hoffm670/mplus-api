@@ -8,14 +8,14 @@ COLLECTION = "collection"
 
 DEV_CONFIG = {
     REFRESH_ENDPOINT_TOGGLE: True,
-    CURRENT_SEASON: "season-tww-1",
+    CURRENT_SEASON: "season-tww-2",
     CURRENT_EXPANSION_ID: "10",
     COLLECTION: "snapshot-dev"
 }
 
 PROD_CONFIG = {
     REFRESH_ENDPOINT_TOGGLE: False,
-    CURRENT_SEASON: "season-tww-1",
+    CURRENT_SEASON: "season-tww-2",
     CURRENT_EXPANSION_ID: "10",
     COLLECTION: "snapshot"
 }
