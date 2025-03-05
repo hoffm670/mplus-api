@@ -15,16 +15,20 @@ class RaiderService:
         player_count = api_response["cutoffs"]["p999"]["all"]["quantilePopulationCount"]
         cutoff_rating = api_response["cutoffs"]["p999"]["all"]["quantileMinValue"]
         graphData = api_response["cutoffs"]["graphData"]["p999"]["data"]
-        latest_ts = datetime.combine(datetime.fromtimestamp(graphData[0]['x'] / 1000), time.min)
-        change = change_days = 0
-        for entry in graphData:
-            ts = datetime.combine(datetime.fromtimestamp(entry['x'] / 1000), time.min)
+        if graphData:
+            latest_ts = datetime.combine(datetime.fromtimestamp(graphData[0]['x'] / 1000), time.min)
+            change = change_days = 0
+            for entry in graphData:
+                ts = datetime.combine(datetime.fromtimestamp(entry['x'] / 1000), time.min)
 
-            days_diff = abs(latest_ts - ts).days
-            if days_diff >= 7:
-                change = round(cutoff_rating - entry['y'], 1)
-                change_days = days_diff
-                break
+                days_diff = abs(latest_ts - ts).days
+                if days_diff >= 7:
+                    change = round(cutoff_rating - entry['y'], 1)
+                    change_days = days_diff
+                    break
+        else:
+            change = 0
+            change_days = 7
 
         return CutoffStats(cutoff_rating, player_count, change, change_days)
 
