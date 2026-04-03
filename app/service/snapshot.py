@@ -100,7 +100,6 @@ class SnapshotService:
 
                 if dungeon.short_name not in dungeon_dict:
                     dungeon_dict[dungeon.short_name] = SnapshotService._get_empty_dungeon_entry(dungeon)
-                    dungeon_dict[dungeon.short_name]['runList']
 
                 key_level = str(run['mythicLevel'])
                 dungeon_dict[dungeon.short_name]['runs'][key_level] = dungeon_dict[dungeon.short_name]['runs'].get(key_level, 0) + 1
