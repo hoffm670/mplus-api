@@ -105,7 +105,23 @@ class SnapshotService:
                 dungeon_dict[dungeon.short_name]['runs'][key_level] = dungeon_dict[dungeon.short_name]['runs'].get(key_level, 0) + 1
                 dungeon_dict[dungeon.short_name]['runList'].append({'level': run['mythicLevel'], 'time_ms': run['clearTimeMs']})
 
-        return list(dungeon_dict.values())
+                # Use the per-run score provided by Raider (if present) so that
+                # each dungeon's averageScore reflects performance specifically in that dungeon.
+                run_score = run.get('score')
+                if run_score is not None:
+                    dungeon_dict[dungeon.short_name]['scoreSum'] += float(run_score)
+                    dungeon_dict[dungeon.short_name]['scoreCount'] += 1
+
+        dungeon_stats: list[dict] = []
+        for dungeon_entry in dungeon_dict.values():
+            score_count = dungeon_entry.get('scoreCount', 0)
+            dungeon_entry['averageScore'] = (dungeon_entry['scoreSum'] / score_count) if score_count else 0
+            dungeon_entry.pop('scoreSum', None)
+            dungeon_entry.pop('scoreCount', None)
+            dungeon_stats.append(dungeon_entry)
+
+        # Highest averageScore first.
+        return sorted(dungeon_stats, key=lambda d: d.get('averageScore', 0), reverse=True)
 
     @staticmethod
     def _get_role_stats(characters: list[Character], cutoff_stats: CutoffStats) -> dict[str, ClassData]:
@@ -130,5 +146,7 @@ class SnapshotService:
         return {
             'runs': {},
             'runList': [],
+            'scoreSum': 0.0,
+            'scoreCount': 0,
             'info': {key.replace('_', ''): value for key, value in dungeon.__dict__.items()}
         }
