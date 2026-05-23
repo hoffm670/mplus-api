@@ -3,7 +3,7 @@ from models.wow_class import ClassData
 
 class MythicPlusSnapshot:
 
-    def __init__(self, date: str, time: str, timestamp: str, region: str, season: str,
+    def __init__(self, date: str, time: str, timestamp: str, region: str, season: str, tier: str,
                  character_count: int, rating_cutoff: int, change: float, change_days: int,
                  dungeons: list[dict], class_data: dict[str, ClassData], score_list: list):
         self._date = date
@@ -11,6 +11,7 @@ class MythicPlusSnapshot:
         self._timestamp = timestamp
         self._region = region
         self._season = season
+        self._tier = tier
         self._character_count = character_count
         self._rating_cutoff = rating_cutoff
         self._change = change
@@ -38,6 +39,10 @@ class MythicPlusSnapshot:
     @property
     def season(self):
         return self._season
+
+    @property
+    def tier(self):
+        return self._tier
 
     @property
     def character_count(self):
@@ -74,6 +79,7 @@ class MythicPlusSnapshot:
             'timestamp': self.timestamp,
             'region': self.region,
             'season': self.season,
+            'tier': self.tier,
             'character_count': self.character_count,
             'rating_cutoff': self.rating_cutoff,
             'change': self.change,

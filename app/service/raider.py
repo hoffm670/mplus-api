@@ -1,4 +1,5 @@
 from datetime import datetime, time
+from typing import NamedTuple
 
 from models.character import Character
 from models.cutoff_stats import CutoffStats
@@ -7,14 +8,20 @@ from models.regions import Region
 from repository.raider_api import RaiderApi
 
 
+class RankingsPage(NamedTuple):
+    characters: list[Character]
+    page_size: int
+
+
 class RaiderService:
 
     @staticmethod
-    def get_cutoff_player_count(season, region: Region) -> CutoffStats:
+    def get_cutoff_player_count(season, region: Region, tier: str = 'p999') -> CutoffStats:
         api_response = RaiderApi.get_season_cutoff(season, region.value)
-        player_count = api_response["cutoffs"]["p999"]["all"]["quantilePopulationCount"]
-        cutoff_rating = api_response["cutoffs"]["p999"]["all"]["quantileMinValue"]
-        graphData = api_response["cutoffs"]["graphData"]["p999"]["data"]
+        tier_data = api_response["cutoffs"][tier]["all"]
+        player_count = tier_data["quantilePopulationCount"]
+        cutoff_rating = tier_data["quantileMinValue"]
+        graphData = api_response["cutoffs"]["graphData"][tier]["data"]
         if graphData:
             latest_ts = datetime.combine(datetime.fromtimestamp(graphData[0]['x'] / 1000), time.min)
             change = change_days = 0
@@ -44,9 +51,10 @@ class RaiderService:
         return (best_keys)
 
     @staticmethod
-    def get_rankings_page(page, season, region: Region) -> list[Character]:
+    def get_rankings_page(page, season, region: Region) -> RankingsPage:
         api_response = RaiderApi.get_rankings_page(page, season, region.value)
-        characters = api_response['rankings']['rankedCharacters']
+        rankings = api_response['rankings']
+        characters = rankings['rankedCharacters']
         trimmed_data: list[Character] = []
         for character in characters:
             trimmed_data.append(Character(
@@ -58,7 +66,10 @@ class RaiderService:
                 character['runs'],
                 character['score']
             ))
-        return trimmed_data
+
+        ui = rankings.get('ui', {})
+        page_size = ui.get('pageSize') or len(trimmed_data) or 1
+        return RankingsPage(trimmed_data, page_size)
 
     @staticmethod
     def get_dungeons() -> dict[str, Dungeon]:
