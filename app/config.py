@@ -8,30 +8,23 @@ COLLECTION_PREFIX = "collection-prefix"
 RANKINGS_MAX_RETRIES = "rankings-max-retries"
 RANKINGS_RETRY_BACKOFF_SECONDS = "rankings-retry-backoff-seconds"
 
-DEV_CONFIG = {
-    REFRESH_ENDPOINT_TOGGLE: True,
-    CURRENT_SEASON: "season-mn-2",
-    CURRENT_EXPANSION_ID: "11",
-    COLLECTION_PREFIX: "snapshot-dev",
-    RANKINGS_MAX_RETRIES: 3,
-    RANKINGS_RETRY_BACKOFF_SECONDS: 0.5,
-}
-
-PROD_CONFIG = {
-    REFRESH_ENDPOINT_TOGGLE: False,
-    CURRENT_SEASON: "season-mn-2",
-    CURRENT_EXPANSION_ID: "11",
-    COLLECTION_PREFIX: "snapshot",
-    RANKINGS_MAX_RETRIES: 3,
-    RANKINGS_RETRY_BACKOFF_SECONDS: 0.5,
-}
+DEFAULT_SEASON = "season-mn-2"
+DEFAULT_EXPANSION_ID = "11"
 
 
 def get_config():
-    if os.environ.get('ENVIRONMENT', 'DEV') == 'PROD':
-        return PROD_CONFIG
-    else:
-        return DEV_CONFIG
+    is_prod = os.environ.get("ENVIRONMENT", "DEV") == "PROD"
+    season = os.environ.get("CURRENT_SEASON") or DEFAULT_SEASON
+    expansion_id = os.environ.get("CURRENT_EXPANSION_ID") or DEFAULT_EXPANSION_ID
+
+    return {
+        REFRESH_ENDPOINT_TOGGLE: not is_prod,
+        CURRENT_SEASON: season,
+        CURRENT_EXPANSION_ID: expansion_id,
+        COLLECTION_PREFIX: "snapshot" if is_prod else "snapshot-dev",
+        RANKINGS_MAX_RETRIES: 3,
+        RANKINGS_RETRY_BACKOFF_SECONDS: 0.5,
+    }
 
 
 def get_collection_for_tier(tier: str) -> str:

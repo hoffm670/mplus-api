@@ -6,6 +6,15 @@ on:
     - cron: '0 13 * * *'
   # Allows triggering manually from the GitHub Actions tab in the repository
   workflow_dispatch:
+    inputs:
+      season:
+        description: 'Override Season Slug (e.g. season-mn-2). Leave blank to use Repo Variable / default.'
+        required: false
+        default: ''
+      expansion_id:
+        description: 'Override Expansion ID (e.g. 11). Leave blank to use Repo Variable / default.'
+        required: false
+        default: ''
 
 jobs:
   scrape-and-update:
@@ -34,6 +43,7 @@ jobs:
         env:
           ENVIRONMENT: PROD
           PYTHONPATH: app
+          CURRENT_SEASON: ${{ inputs.season || vars.CURRENT_SEASON || '' }}
+          CURRENT_EXPANSION_ID: ${{ inputs.expansion_id || vars.CURRENT_EXPANSION_ID || '' }}
         run: |
-          python app/test_main.py
-
+          python app/run_snapshot.py
