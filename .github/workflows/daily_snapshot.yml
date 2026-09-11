@@ -1,0 +1,39 @@
+name: Daily M+ Snapshot Scraper
+
+on:
+  schedule:
+    # Runs daily at 13:00 UTC (8:00 AM US Central)
+    - cron: '0 13 * * *'
+  # Allows triggering manually from the GitHub Actions tab in the repository
+  workflow_dispatch:
+
+jobs:
+  scrape-and-update:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.10'
+          cache: 'pip'
+
+      - name: Install dependencies
+        run: |
+          pip install -r requirements.txt
+
+      - name: Create Firebase Admin Key
+        env:
+          FIREBASE_ADMIN_KEY: ${{ secrets.FIREBASE_ADMIN_KEY }}
+        run: |
+          echo "$FIREBASE_ADMIN_KEY" > firebase-admin-key.json
+
+      - name: Run Snapshot Generator
+        env:
+          ENVIRONMENT: PROD
+          PYTHONPATH: app
+        run: |
+          python app/test_main.py
+
