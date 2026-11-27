@@ -1,11 +1,7 @@
 fastapi
 firebase-admin
-pydantic==1.10.10
+pydantic
 pyinstaller
 pyyaml
 requests
-rocketry
 uvicorn
-pyopenssl
-pyasn1
-ndg-httpsclient

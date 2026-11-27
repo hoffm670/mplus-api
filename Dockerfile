@@ -1,5 +1,5 @@
 ### Builder ###
-FROM python:3.10.12-alpine as builder
+FROM python:3.13-alpine AS builder
 
 RUN apk add binutils
 
@@ -12,13 +12,13 @@ RUN pyinstaller --onefile /app/main.py
 
 
 ### Executor ###
-FROM alpine:3.16
+FROM alpine:3.21
 
 ARG WORKDIR="/mplus-api"
 WORKDIR $WORKDIR
 COPY --from=builder /dist/main ${WORKDIR}
 COPY log_conf.yaml firebase-admin-key.json ${WORKDIR}
 
-ENV ENVIRONMENT 'PROD'
+ENV ENVIRONMENT='PROD'
 
 ENTRYPOINT ["./main"]
